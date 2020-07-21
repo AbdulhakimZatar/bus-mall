@@ -6,9 +6,13 @@ var votingRounds = 25;
 var allProducts = [];
 var totalClicks = 0;
 
-var leftImageIndex;
-var centerImageIndex;
-var rightImageIndex;
+var productsName = [];
+var numberOfClicks = [];
+var numberofTimesShown = [];
+
+var leftImageIndex = 0;
+var centerImageIndex = 0;
+var rightImageIndex = 0;
 
 function Product(name, path){
     this.name = name;
@@ -17,7 +21,10 @@ function Product(name, path){
     this.numberOfClicks = 0;
     this.numberofTimesShown = 0;
 
+    this.usedBefore = false;
+
     allProducts.push(this);
+    productsName.push(this.name)
 }
 
 new Product('Bag', 'img/bag.jpg');
@@ -50,26 +57,35 @@ function generateRandomImage(){
     var centerImage = document.getElementById('center_product_img');
     var rightImage = document.getElementById('right_product_img');
 
+    // console.log(allProducts[rightImageIndex].usedBefore);
+
+    // console.log(allProducts[rightImageIndex].usedBefore);
+
     leftImageIndex = generateRandomNumber();
     centerImageIndex = generateRandomNumber();
     rightImageIndex = generateRandomNumber();
 
-    while(leftImageIndex === rightImageIndex || leftImageIndex === centerImageIndex)
-    {
-        leftImageIndex = generateRandomNumber();
-    }
-    while(rightImageIndex === leftImageIndex || rightImageIndex === centerImageIndex)
-    {
-        rightImageIndex = generateRandomNumber();
-    }
-    while(centerImageIndex === rightImageIndex || centerImageIndex === leftImageIndex)
-    {
-        centerImageIndex = generateRandomNumber();
-    }
+
+    while(leftImageIndex === rightImageIndex || leftImageIndex === centerImageIndex || allProducts[leftImageIndex].usedBefore === true)
+        {
+            leftImageIndex = generateRandomNumber();
+        }
+    while(centerImageIndex === rightImageIndex || centerImageIndex === leftImageIndex || allProducts[centerImageIndex].usedBefore === true)
+        {
+            centerImageIndex = generateRandomNumber();
+        }
+    while(rightImageIndex === leftImageIndex || rightImageIndex === centerImageIndex || allProducts[rightImageIndex].usedBefore === true)
+        {
+            rightImageIndex = generateRandomNumber();
+        }
+
+     
 
     var leftPath = allProducts[leftImageIndex].path;
     var centerPath = allProducts[centerImageIndex].path;
     var rightPath = allProducts[rightImageIndex].path;
+
+
 
     allProducts[leftImageIndex].numberofTimesShown +=1;
     allProducts[centerImageIndex].numberofTimesShown +=1;
@@ -78,6 +94,7 @@ function generateRandomImage(){
     leftImage.setAttribute('src', leftPath);
     centerImage.setAttribute('src', centerPath);
     rightImage.setAttribute('src', rightPath);
+
 }
 
 function generateRandomNumber(){
@@ -85,6 +102,7 @@ function generateRandomNumber(){
 }
 
 function productClickHandler(){
+
     if (totalClicks < votingRounds){
         var clickedElement = event.target;
         var clickedElementId = clickedElement.id;
@@ -101,11 +119,21 @@ function productClickHandler(){
             if(clickedElementId === 'right_product_img'){
                 allProducts[leftImageIndex].numberOfClicks +=1;
             }
+            allProducts[leftImageIndex].usedBefore = false;
+            allProducts[centerImageIndex].usedBefore = false;
+            allProducts[rightImageIndex].usedBefore = false;
             generateRandomImage();
+           
+            allProducts[leftImageIndex].usedBefore = true;
+            allProducts[centerImageIndex].usedBefore = true;
+            allProducts[rightImageIndex].usedBefore = true;
+
         }
     }else{
+        populateNumberOfClicksArr();
         generateUserMessage();
         productsSection.removeEventListener('click', productClickHandler);
+        generateChart();
     }
 }
 
@@ -119,4 +147,48 @@ function generateUserMessage(){
     }
 }
 
+function populateNumberOfClicksArr(){
+    for (let index = 0; index < allProducts.length; index++) {
+        numberOfClicks.push(allProducts[index].numberOfClicks);   
+        numberofTimesShown.push(allProducts[index].numberofTimesShown);  
+    }
+}
+
+function generateChart(){
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: productsName,
+        datasets: [{
+          label: '# of Clicks',
+          data: numberOfClicks,
+          backgroundColor: "rgba(255,99,132,0.2)",
+          borderColor: "rgba(255,99,132,1)",
+          hoverBackgroundColor: "rgba(255,99,132,0.4)",
+          hoverBorderColor: "rgba(255,99,132,1)",
+          borderWidth: 1
+        },{
+            label: '# of Shown',
+            data: numberofTimesShown,
+            backgroundColor: "rgba(55,88,249,0.2)",
+            borderColor: "rgba(55,88,249,1)",
+            hoverBackgroundColor: "rgba(55,88,249,0.4)",
+            hoverBorderColor: "rgba(55,88,249,1)",
+            borderWidth: 1
+          }
+    ]
+      },
+      options: {
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
+}
 

@@ -52,7 +52,8 @@ h1 {
 }
 
 footer {
-    margin-top: 650px;
+    position: relative;
+    margin-top: 850px;
     top: 0;
     background-color: lightblue;
     border: lightseagreen solid;
@@ -65,4 +66,34 @@ footer {
     width: 200px;
     height: 200px;
     border: solid;
+    margin: 30px;
+    position: relative;
 }
+
+.rightSec p {
+
+}
+
+
+
+.chartDiv{
+    top: 700px;
+    position: relative;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+.chartDiv section canvas {
+    border: 1px dotted lightseagreen;
+  }
+
+  #myChart {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    height: 500px;
+    width: auto;
+    
+  }
