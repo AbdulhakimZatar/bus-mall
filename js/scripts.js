@@ -7,8 +7,9 @@ var allProducts = [];
 var totalClicks = 0;
 
 var productsName = [];
+
 var numberOfClicks = [];
-var numberofTimesShown = [];
+var numberOfTimesShown = [];
 
 var leftImageIndex = 0;
 var centerImageIndex = 0;
@@ -19,7 +20,7 @@ function Product(name, path){
     this.path = path;
 
     this.numberOfClicks = 0;
-    this.numberofTimesShown = 0;
+    this.numberOfTimesShown = 0;
 
     this.usedBefore = false;
 
@@ -85,11 +86,9 @@ function generateRandomImage(){
     var centerPath = allProducts[centerImageIndex].path;
     var rightPath = allProducts[rightImageIndex].path;
 
-
-
-    allProducts[leftImageIndex].numberofTimesShown +=1;
-    allProducts[centerImageIndex].numberofTimesShown +=1;
-    allProducts[rightImageIndex].numberofTimesShown +=1;
+    allProducts[leftImageIndex].numberOfTimesShown +=1;
+    allProducts[centerImageIndex].numberOfTimesShown +=1;
+    allProducts[rightImageIndex].numberOfTimesShown +=1;
 
     leftImage.setAttribute('src', leftPath);
     centerImage.setAttribute('src', centerPath);
@@ -114,11 +113,12 @@ function productClickHandler(){
                 allProducts[leftImageIndex].numberOfClicks +=1;
             }
             if(clickedElementId === 'center_product_img'){
-                allProducts[leftImageIndex].numberOfClicks +=1;
+                allProducts[centerImageIndex].numberOfClicks +=1;
             }
             if(clickedElementId === 'right_product_img'){
-                allProducts[leftImageIndex].numberOfClicks +=1;
+                allProducts[rightImageIndex].numberOfClicks +=1;
             }
+            
             allProducts[leftImageIndex].usedBefore = false;
             allProducts[centerImageIndex].usedBefore = false;
             allProducts[rightImageIndex].usedBefore = false;
@@ -134,6 +134,7 @@ function productClickHandler(){
         generateUserMessage();
         productsSection.removeEventListener('click', productClickHandler);
         generateChart();
+        storeProducts();
     }
 }
 
@@ -142,18 +143,38 @@ function generateUserMessage(){
 
     for (let index = 0; index < allProducts.length; index++) {
         var listItem = document.createElement('li');
-        listItem.textContent = allProducts[index].name + ': ' + allProducts[index].numberOfClicks + ' votes | ' + allProducts[index].numberofTimesShown + ' shown.';
+        listItem.textContent = allProducts[index].name + ': ' + allProducts[index].numberOfClicks + ' votes | ' + allProducts[index].numberOfTimesShown + ' shown.';
         ulElement.appendChild(listItem);
     }
 }
 
 function populateNumberOfClicksArr(){
     for (let index = 0; index < allProducts.length; index++) {
-        numberOfClicks.push(allProducts[index].numberOfClicks);   
-        numberofTimesShown.push(allProducts[index].numberofTimesShown);  
+        numberOfClicks.push(allProducts[index].numberOfClicks);
+        numberOfTimesShown.push(allProducts[index].numberOfTimesShown);
     }
 }
 
+function storeProducts(){
+    var jsonStringProducts = JSON.stringify(allProducts);
+    localStorage.setItem('products',jsonStringProducts);
+  }
+
+  parseLocalStorage();
+
+
+  function parseLocalStorage(){
+    var previousProductsArr = JSON.parse(localStorage.getItem('products'))
+    update(previousProductsArr);
+  }
+
+  function update(previousProductsArr){
+    for (let i = 0; i < allProducts.length; i++) {
+      allProducts[i].numberOfTimesShown = previousProductsArr[i].numberOfTimesShown;
+      allProducts[i].numberOfClicks = previousProductsArr[i].numberOfClicks;
+    }
+  }
+  
 function generateChart(){
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
@@ -170,7 +191,7 @@ function generateChart(){
           borderWidth: 1
         },{
             label: '# of Shown',
-            data: numberofTimesShown,
+            data: numberOfTimesShown,
             backgroundColor: "rgba(55,88,249,0.2)",
             borderColor: "rgba(55,88,249,1)",
             hoverBackgroundColor: "rgba(55,88,249,0.4)",
