@@ -15,6 +15,7 @@ var leftImageIndex = 0;
 var centerImageIndex = 0;
 var rightImageIndex = 0;
 
+
 function Product(name, path){
     this.name = name;
     this.path = path;
@@ -57,10 +58,6 @@ function generateRandomImage(){
     var leftImage = document.getElementById('left_product_img');
     var centerImage = document.getElementById('center_product_img');
     var rightImage = document.getElementById('right_product_img');
-
-    // console.log(allProducts[rightImageIndex].usedBefore);
-
-    // console.log(allProducts[rightImageIndex].usedBefore);
 
     leftImageIndex = generateRandomNumber();
     centerImageIndex = generateRandomNumber();
@@ -212,4 +209,4 @@ function generateChart(){
       }
     });
 }
-
+//
